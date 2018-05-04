@@ -305,7 +305,7 @@ function Riven:CastQ(target)
         if qtarg.dead or qtarg.isImmune then return end
         if myHero.pos:DistanceTo(qtarg.pos) < 420 and self:HasBuff(myHero, "rivenwindslashready") then    --myHero.range
             if self.Menu.Combo.UseQ:Value() and self:CanCast(_Q) and myHero.attackData.state == STATE_WINDDOWN then
-                local pred=qtarg:GetPrediction(Q.speed, .25 + Game.Latency()/1000)
+                local pred=qtarg:GetPrediction(Q.speed, 0.267 + Game.Latency()/1000)
                 DisableOrb()
                 Control.CastSpell(HK_Q,qtarg)
                 Control.Attack(qtarg)
@@ -315,13 +315,13 @@ function Riven:CastQ(target)
                     DelayAction(function()
                     local Vec = Vector(myHero.pos):Normalized() * - (myHero.boundingRadius*1.1)
                     Control.Move(Vec)
-                    end, (0.25 + Game.Latency()/1000))
+                    end, (0.267 + Game.Latency()/1000))
                 end
             end
         else
         	if myHero.pos:DistanceTo(qtarg.pos) < 275 and not self:HasBuff(myHero, "rivenwindslashready") then    --Q without buff less range wont chase with q but aa more reliable
             	if self.Menu.Combo.UseQ:Value() and self:CanCast(_Q) and myHero.attackData.state == STATE_WINDDOWN then
-                	local pred=qtarg:GetPrediction(Q.speed, .25 + Game.Latency()/1000)
+                	local pred=qtarg:GetPrediction(Q.speed, 0.267 + Game.Latency()/1000)
                 	DisableOrb()
                 	Control.CastSpell(HK_Q,qtarg)
                 	Control.Attack(qtarg)
@@ -331,7 +331,7 @@ function Riven:CastQ(target)
                     	DelayAction(function()
                     	local Vec = Vector(myHero.pos):Normalized() * - (myHero.boundingRadius*1.1)
                     	Control.Move(Vec)
-                    	end, (0.25 + Game.Latency()/1000))
+                    	end, (0.267 + Game.Latency()/1000))
                 	end
             	end
         	end
