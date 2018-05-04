@@ -1,7 +1,17 @@
-if GetObjectName(GetMyHero()) ~= "Riven" then return end
+class "Riven"
 
 require('MapPositionGOS')
 require('DamageLib')
+
+function Riven:__init()
+	if myHero.charName ~= "Riven" then return end
+PrintChat("[RivenBunny]")  
+self:LoadSpells()
+self:LoadMenu()
+Callback.Add("Tick", function() self:Tick() end)
+Callback.Add("Draw", function() self:Draw() end)
+end
+
 
 local RivenMenu = MenuConfig("Riven", "Riven")
 RivenMenu:Menu("Combo", "Combo")
