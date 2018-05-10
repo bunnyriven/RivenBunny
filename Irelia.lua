@@ -1,22 +1,6 @@
 class "Irelia"
-
-
-function Irelia:LoadSpells()
-
-	Q = {Range = 650, Width = 0, Delay = 0.35, Speed = 2200, Collision = false, aoe = false, Type = "line"}
-	W = {Range = 130, Width = 0, Delay = 0.30, Speed = 1000, Collision = false, aoe = false, Type = "line"}
-	E = {Range = 325, Width = 70, Delay = 0.25, Speed = 1200, Collision = false, aoe = false, Type = "line"}
-	R = {Range = 1000, Width = 0, Delay = 0.25, Speed = 1200, Collision = false, aoe = false, Type = "line"}
-
-end
-
-
-function Irelia:__init()
-	self:LoadSpells()
-	self:LoadMenu()
-	Callback.Add("Tick", function() self:Tick() end)
-	Callback.Add("Draw", function() self:Draw() end)
-	gsoSDK.Menu = MenuElement({name = "BunnyIrelia", id = "Irelia"})
+      function Irelia:__init()
+	gsoSDK.Menu = MenuElement({name = "Bunny Irelia", id = "Irelia", type = MENU, leftIcon = "https://raw.githubusercontent.com/gamsteron/GoSExt/master/Icons/x1xxbrandx3xx.png" })
             __gsoLoader()
             gsoSDK.Orbwalker:SetSpellMoveDelays( { q = 0.2, w = 0.2, e = 0.2, r = 0.2 } )
             gsoSDK.Orbwalker:SetSpellAttackDelays( { q = 0.33, w = 0.33, e = 0.33, r = 0.33 } )
