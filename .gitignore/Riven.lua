@@ -16,10 +16,10 @@ end
 
 function Riven.LoadSpells()
 
-	Q = {range = 250, delay = 0, width = 0, speed = 0}
-	W = {range = 260, delay = 0, width = 260, speed = 1500}
-	E = {range = 260, delay = 0, width = 0, speed = 1450}
-	R = {range = 900, delay = 0, width = 200, speed = 1200}
+	Q = {range = 260, delay = 0.267, width = 135, speed = 0}
+	W = {range = 125, delay = 0.25, width = 1, speed = 1}
+	E = {range = 325, delay = 0.25, width = 1, speed = 1}
+	R = {range = 900, delay = 0.25, width = 50, speed = 1600}
 end
 
 function Riven:LoadMenu()
