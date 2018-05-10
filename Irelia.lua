@@ -12,6 +12,32 @@ class "Irelia"
                   if not gsoSDK.Menu.orb.keys.combo:Value() and not gsoSDK.Menu.orb.keys.harass:Value() then
                         return true
                   end
+	          -- W
+                  local wDis = gsoSDK.Menu.wset.disaa:Value()
+                  local wLvl = wDis and myHero:GetSpellData(_W).level or 0
+                  local isWReady = wLvl > 0 and GameCanUseSpell(_W) == 0
+                  local almostWReady = wLvl > 0 and myHero.mana > myHero:GetSpellData(_W).mana and myHero:GetSpellData(_W).currentCd < 1
+                  local w = isWReady or almostWReady
+                  -- E
+                  local eDis = gsoSDK.Menu.eset.disaa:Value()
+                  local eLvl = eDis and myHero:GetSpellData(_E).level or 0
+                  local isEReady = eLvl > 0 and GameCanUseSpell(_E) == 0
+                  local almostEReady = eLvl > 0 and myHero.mana > myHero:GetSpellData(_E).mana and myHero:GetSpellData(_E).currentCd < 1
+                  local e = isEReady or almostEReady
+                  if w or e then
+                        return false
+                  end
+                  return true
+            end)
+      end
+      function Irelia:LoadSpells()
+
+	Q = {Range = 650, Width = 0, Delay = 0.35, Speed = 2200, Collision = false, aoe = false, Type = "line"}
+	W = {Range = 130, Width = 0, Delay = 0.30, Speed = 1000, Collision = false, aoe = false, Type = "line"}
+	E = {Range = 325, Width = 70, Delay = 0.25, Speed = 1200, Collision = false, aoe = false, Type = "line"}
+	R = {Range = 1000, Width = 0, Delay = 0.25, Speed = 1200, Collision = false, aoe = false, Type = "line"}
+
+end
 
 
 function Irelia:Tick()
