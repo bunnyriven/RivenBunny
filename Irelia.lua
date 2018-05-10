@@ -42,15 +42,15 @@ end
 
 function Irelia:Tick()
     if myHero.dead or Game.IsChatOpen() == true or IsRecalling() == true or ExtLibEvade and ExtLibEvade.Evading == true then return end
-	if AIO.Combo.comboActive:Value() then
+	if self.Combo.comboActive:Value() then
 		self:ComboQ()
 		self:ComboW()
 		self:ComboE()
 	end
-	if AIO.Lasthit.lasthitActive:Value() then
+	if self.Lasthit.lasthitActive:Value() then
 		self:Lasthit()
 	end
-	if AIO.Harass.harassActive:Value() then
+	if self.Harass.harassActive:Value() then
 		self:HarassE()
 		self:HarassW()
 	end
@@ -63,11 +63,11 @@ function Irelia:Tick()
 end
 
 function Irelia:Draw()
-if Ready(_Q) and AIO.Drawings.Q.Enabled:Value() then Draw.Circle(myHero.pos, Q.Range, AIO.Drawings.Q.Width:Value(), AIO.Drawings.Q.Color:Value()) end
-if Ready(_E) and AIO.Drawings.E.Enabled:Value() then Draw.Circle(myHero.pos, E.Range, AIO.Drawings.E.Width:Value(), AIO.Drawings.E.Color:Value()) end
-if Ready(_R) and AIO.Drawings.R.Enabled:Value() then Draw.Circle(myHero.pos, R.Range, AIO.Drawings.R.Width:Value(), AIO.Drawings.R.Color:Value()) end
+if Ready(_Q) and self.Drawings.Q.Enabled:Value() then Draw.Circle(myHero.pos, Q.Range, AIO.Drawings.Q.Width:Value(), AIO.Drawings.Q.Color:Value()) end
+if Ready(_E) and self.Drawings.E.Enabled:Value() then Draw.Circle(myHero.pos, E.Range, AIO.Drawings.E.Width:Value(), AIO.Drawings.E.Color:Value()) end
+if Ready(_R) and self.Drawings.R.Enabled:Value() then Draw.Circle(myHero.pos, R.Range, AIO.Drawings.R.Width:Value(), AIO.Drawings.R.Color:Value()) end
 
-		if AIO.Drawings.DrawDamage:Value() then
+		if self.Drawings.DrawDamage:Value() then
 		for i, hero in pairs(GetEnemyHeroes()) do
 			local barPos = hero.hpBar
 			if not hero.dead and hero.pos2D.onScreen and barPos.onScreen and hero.visible then
@@ -138,7 +138,7 @@ end
 function Irelia:ComboQ()
 	local target = CurrentTarget(Q.Range)
 	if target == nil then return end
-	if AIO.Combo.UseQ:Value() and target and Ready(_Q) then
+	if self.Combo.UseQ:Value() and target and Ready(_Q) then
 		if EnemyInRange(Q.Range) and GetDistance(myHero.pos, target.pos) > 130 then 
 		    Control.CastSpell(HK_Q,target)
 			end
@@ -148,7 +148,7 @@ end
 function Irelia:ComboW()
 	local target = CurrentTarget(W.Range)
 	if target == nil then return end
-	if AIO.Combo.UseW:Value() and target and Ready(_W) then
+	if self.Combo.UseW:Value() and target and Ready(_W) then
 		if EnemyInRange(W.Range) then
 			if GetDistance(myHero.pos, target.pos) < 130 then
 			    Control.CastSpell(HK_W)
@@ -160,10 +160,10 @@ end
 function Irelia:ComboE()
 	local target = CurrentTarget(E.Range)
 	if target == nil then return end
-	if AIO.Combo.UseE:Value() and target and Ready(_E) then
-		if EnemyInRange(E.Range) and AIO.Combo.EStun:Value() == false then
+	if self.Combo.UseE:Value() and target and Ready(_E) then
+		if EnemyInRange(E.Range) and self.Combo.EStun:Value() == false then
 			    Control.CastSpell(HK_E,target)
-		elseif EnemyInRange(E.Range) and AIO.Combo.EStun:Value() == true then
+		elseif EnemyInRange(E.Range) and self.Combo.EStun:Value() == true then
 			if target.health >= myHero.health then
 				Control.CastSpell(HK_E,target)
 			end
@@ -174,7 +174,7 @@ end
 function Irelia:RKey()
 	local target = CurrentTarget(R.Range)
 	if target == nil then return end
-	if AIO.Combo.RKey:Value() and target and Ready(_R) then
+	if self.Combo.RKey:Value() and target and Ready(_R) then
 		if EnemyInRange(R.Range) then
 			local castpos,HitChance, pos = TPred:GetBestCastPosition(target, R.Delay , R.Width, R.Range, R.Speed, myHero.pos, R.ignorecol, R.Type )
 			if (HitChance > 0 ) then
@@ -187,7 +187,7 @@ end
 function Irelia:HarassQ()
 	local target = CurrentTarget(Q.Range)
 	if target == nil then return end
-	if AIO.Harass.UseQ:Value() and target and Ready(_Q) then
+	if self.Harass.UseQ:Value() and target and Ready(_Q) then
 		if EnemyInRange(Q.Range) and GetDistance(myHero.pos, target.pos) > 130 then 
 		    Control.CastSpell(HK_Q,target)
 			end
@@ -197,7 +197,7 @@ end
 function Irelia:HarassE()
 	local target = CurrentTarget(E.Range)
 	if target == nil then return end
-	if AIO.Harass.UseE:Value() and target and Ready(_E) then
+	if self.Harass.UseE:Value() and target and Ready(_E) then
 		if EnemyInRange(E.Range) then 
 		    Control.CastSpell(HK_E,target)
 		end
@@ -207,7 +207,7 @@ end
 function Irelia:HarassW()
 	local target = CurrentTarget(W.Range)
 	if target == nil then return end
-	if AIO.Harass.UseW:Value() and target and Ready(_W) then
+	if self.Harass.UseW:Value() and target and Ready(_W) then
 		if EnemyInRange(W.Range) then
 			if GetDistance(myHero.pos, target.pos) < 130 then
 			    Control.CastSpell(HK_W)
@@ -233,7 +233,7 @@ end
 function Irelia:KillstealQ()
 	local target = CurrentTarget(Q.Range)
 	if target == nil then return end
-	if AIO.Killsteal.UseQ:Value() and AIO.Killsteal.KS["KS"..target.charName]:Value() and target and Ready(_Q) then
+	if self.Killsteal.UseQ:Value() and self.Killsteal.KS["KS"..target.charName]:Value() and target and Ready(_Q) then
 		if EnemyInRange(Q.Range) then 
 		   	local Qdamage = Irelia:QDMG()
 			if Qdamage >= HpPred(target,1) + target.hpRegen * 1 then
@@ -246,7 +246,7 @@ function Irelia:KillstealQ()
 function Irelia:KillstealE()
 	local target = CurrentTarget(E.Range)
 	if target == nil then return end
-	if AIO.Killsteal.UseE:Value() and AIO.Killsteal.KS["KS"..target.charName]:Value() and target and Ready(_E) then
+	if self.Killsteal.UseE:Value() and self.Killsteal.KS["KS"..target.charName]:Value() and target and Ready(_E) then
 		if EnemyInRange(E.Range) then 
 		   	local Edamage = Irelia:EDMG()
 			if Edamage >= HpPred(target,1) + target.hpRegen * 1 then
@@ -259,7 +259,7 @@ function Irelia:KillstealE()
 function Irelia:KillstealR()
 	local target = CurrentTarget(R.Range)
 	if target == nil then return end
-	if AIO.Killsteal.UseR:Value() and AIO.Killsteal.KS["KS"..target.charName]:Value() and target and Ready(_R) then
+	if self.Killsteal.UseR:Value() and self.Killsteal.KS["KS"..target.charName]:Value() and target and Ready(_R) then
 		local castpos,HitChance, pos = TPred:GetBestCastPosition(target, R.Delay , R.Width, R.Range, R.Speed, myHero.pos, R.ignorecol, R.Type )
 		if EnemyInRange(R.Range) then 
 		   	local Rdamage = Irelia:RDMG()
