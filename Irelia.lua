@@ -1,35 +1,26 @@
 class "Irelia"
+
+require = 'DamageLib'
+require = 'Collision'
+require = 'Tpred'
+
       function Irelia:__init()
-	gsoSDK.Menu = MenuElement({name = "Bunny Irelia", id = "Irelia", type = MENU, leftIcon = "https://raw.githubusercontent.com/gamsteron/GoSExt/master/Icons/x1xxbrandx3xx.png" })
-            __gsoLoader()
-            gsoSDK.Orbwalker:SetSpellMoveDelays( { q = 0.2, w = 0.2, e = 0.2, r = 0.2 } )
-            gsoSDK.Orbwalker:SetSpellAttackDelays( { q = 0.33, w = 0.33, e = 0.33, r = 0.33 } )
-            self:SetSpellData()
-            self:CreateMenu()
-            self:AddTickEvent()
-            gsoSDK.Orbwalker:CanAttackEvent(function()
-                  -- LastHit, LaneClear
-                  if not gsoSDK.Menu.orb.keys.combo:Value() and not gsoSDK.Menu.orb.keys.harass:Value() then
-                        return true
-                  end
-	          -- W
-                  local wDis = gsoSDK.Menu.wset.disaa:Value()
-                  local wLvl = wDis and myHero:GetSpellData(_W).level or 0
-                  local isWReady = wLvl > 0 and GameCanUseSpell(_W) == 0
-                  local almostWReady = wLvl > 0 and myHero.mana > myHero:GetSpellData(_W).mana and myHero:GetSpellData(_W).currentCd < 1
-                  local w = isWReady or almostWReady
-                  -- E
-                  local eDis = gsoSDK.Menu.eset.disaa:Value()
-                  local eLvl = eDis and myHero:GetSpellData(_E).level or 0
-                  local isEReady = eLvl > 0 and GameCanUseSpell(_E) == 0
-                  local almostEReady = eLvl > 0 and myHero.mana > myHero:GetSpellData(_E).mana and myHero:GetSpellData(_E).currentCd < 1
-                  local e = isEReady or almostEReady
-                  if w or e then
-                        return false
-                  end
-                  return true
-            end)
-      end
+	 self:LoadSpells()
+    self:LoadMenu()
+    Callback.Add("Tick", function() self:Tick() end)
+    Callback.Add("Draw", function() self:Draw() end)
+    local orbwalkername = ""
+    if _G.SDK then
+        orbwalkername = "IC'S orbwalker"
+    elseif _G.EOW then
+        orbwalkername = "EOW"
+    elseif _gsoOrbwalker then
+        orbwalkername = "gamsteron orbwalker"
+    else
+        orbwalkername = "Orbwalker not found"
+    end
+    PrintChat(Scriptname.." "..Version.." - Loaded...."..orbwalkername)
+end
       function Irelia:LoadSpells()
 
 	Q = {Range = 650, Width = 0, Delay = 0.35, Speed = 2200, Collision = false, aoe = false, Type = "line"}
