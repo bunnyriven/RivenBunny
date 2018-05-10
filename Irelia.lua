@@ -4,24 +4,18 @@ require = 'DamageLib'
 require = 'Collision'
 require = 'Tpred'
 
-      function Irelia:__init()
-	 self:LoadSpells()
-    self:LoadMenu()
-    Callback.Add("Tick", function() self:Tick() end)
-    Callback.Add("Draw", function() self:Draw() end)
-    local orbwalkername = ""
-    if _G.SDK then
-        orbwalkername = "IC'S orbwalker"
-    elseif _G.EOW then
-        orbwalkername = "EOW"
-    elseif _gsoOrbwalker then
-        orbwalkername = "gamsteron orbwalker"
-    else
-        orbwalkername = "Orbwalker not found"
-    end
-    PrintChat(Scriptname.." "..Version.." - Loaded...."..orbwalkername)
+function Irelia:__init()
+	if myHero.charName ~= "Irelia" then return end
+PrintChat("Test Irelia]")  
+self:LoadSpells()
+self:LoadMenu()
+Callback.Add("Tick", function() self:Tick() end)
+Callback.Add("Draw", function() self:Draw() end)
 end
-      function Irelia:LoadSpells()
+
+	 
+   
+function Irelia:LoadSpells()
 
 	Q = {Range = 650, Width = 0, Delay = 0.35, Speed = 2200, Collision = false, aoe = false, Type = "line"}
 	W = {Range = 130, Width = 0, Delay = 0.30, Speed = 1000, Collision = false, aoe = false, Type = "line"}
@@ -30,33 +24,63 @@ end
 
 end
 
+function Irelia:LoadMenu()
+    self.Menu = MenuElement({type = MENU, id = "Irelia", name = "Test Irelia"})
+
+    --[[Combo]]
+    self.Menu:MenuElement({type = MENU, id = "Combo", name = "Combo Settings"})
+    self.Menu.Combo:MenuElement({id = "ComboQ", name = "Use Q", value = true})
+    self.Menu.Combo:MenuElement({id = "ComboW", name = "Use W", value = true})
+    self.Menu.Combo:MenuElement({id = "ComboE", name = "Use E", value = true})
+    self.Menu.Combo:MenuElement({id = "ComboR", name = "Use R", value = true})
+    --[[Harass]]
+    self.Menu:MenuElement({type = MENU, id = "Harass", name = "Harass Settings"})
+    self.Menu.Harass:MenuElement({id = "HarassQ", name = "Use Q", value = true})
+    self.Menu.Harass:MenuElement({id = "HarassW", name = "Use W", value = true})
+    self.Menu.Harass:MenuElement({id = "HarassE", name = "Use E", value = true})
+    self.Menu.Harass:MenuElement({id = "HarassMana", name = "Min. Mana", value = 40, min = 0, max = 100})
+
+    --[[Farm]]
+    self.Menu:MenuElement({type = MENU, id = "Farm", name = "Farm Settings"})
+    self.Menu.Farm:MenuElement({id = "FarmQ", name = "Use Q", value = true})
+    self.Menu.Farm:MenuElement({id = "FarmW", name = "Use W", value = true})
+    self.Menu.Farm:MenuElement({id = "FarmE", name = "Use E", value = true})
+    self.Menu.Farm:MenuElement({id = "FarmMana", name = "Min. Mana", value = 40, min = 0, max = 100})
+
+    --[[Misc]]
+    self.Menu:MenuElement({type = MENU, id = "Misc", name = "Misc Settings"})
+
+    --[[Draw]]
+    self.Menu:MenuElement({type = MENU, id = "Draw", name = "Drawing Settings"})
+    self.Menu.Draw:MenuElement({id = "DrawReady", name = "Draw Only Ready Spells [?]", value = true, tooltip = "Only draws spells when they're ready"})
+    self.Menu.Draw:MenuElement({id = "DrawQ", name = "Draw Q Range", value = true})
+    self.Menu.Draw:MenuElement({id = "DrawW", name = "Draw W Range", value = true})
+    self.Menu.Draw:MenuElement({id = "DrawE", name = "Draw E Range", value = true})
+    self.Menu.Draw:MenuElement({id = "DrawR", name = "Draw R Range", value = true})
+    self.Menu.Draw:MenuElement({id = "DrawTarget", name = "Draw Target [?]", value = true, tooltip = "Draws current target"})
+
+    PrintChat("[Irelia Test] Menu Loaded")
+end
 
 function Irelia:Tick()
-    if myHero.dead or Game.IsChatOpen() == true or IsRecalling() == true or ExtLibEvade and ExtLibEvade.Evading == true then return end
-	if self.Combo.comboActive:Value() then
-		self:ComboQ()
-		self:ComboW()
-		self:ComboE()
-	end
-	if self.Lasthit.lasthitActive:Value() then
-		self:Lasthit()
-	end
-	if self.Harass.harassActive:Value() then
-		self:HarassE()
-		self:HarassW()
-	end
-	
-	self:KillstealQ()
-	self:KillstealE()
-	self:KillstealR()
-	
-	self:RKey()
+	if myHero.dead then return end
+if _G.SDK.Orbwalker.Modes[_G.SDK.ORBWALKER_MODE_COMBO] then
+			self:Combo()
+		elseif _G.SDK.Orbwalker.Modes[_G.SDK.ORBWALKER_MODE_HARASS] then
+			self:Harass()
+		elseif _G.SDK.Orbwalker.Modes[_G.SDK.ORBWALKER_MODE_JUNGLECLEAR] then
+			self:JungleClear()
+		elseif _G.SDK.Orbwalker.Modes[_G.SDK.ORBWALKER_MODE_FLEE] then
+			self:Flee()	
+		end
+	self:Misc()
+	self:KS()
 end
 
 function Irelia:Draw()
-if Ready(_Q) and self.Drawings.Q.Enabled:Value() then Draw.Circle(myHero.pos, Q.Range, AIO.Drawings.Q.Width:Value(), AIO.Drawings.Q.Color:Value()) end
-if Ready(_E) and self.Drawings.E.Enabled:Value() then Draw.Circle(myHero.pos, E.Range, AIO.Drawings.E.Width:Value(), AIO.Drawings.E.Color:Value()) end
-if Ready(_R) and self.Drawings.R.Enabled:Value() then Draw.Circle(myHero.pos, R.Range, AIO.Drawings.R.Width:Value(), AIO.Drawings.R.Color:Value()) end
+if Ready(_Q) and self.Drawings.Q.Enabled:Value() then Draw.Circle(myHero.pos, Q.Range, self.Drawings.Q.Width:Value(), self.Drawings.Q.Color:Value()) end
+if Ready(_E) and self.Drawings.E.Enabled:Value() then Draw.Circle(myHero.pos, E.Range, self.Drawings.E.Width:Value(), self.Drawings.E.Color:Value()) end
+if Ready(_R) and self.Drawings.R.Enabled:Value() then Draw.Circle(myHero.pos, R.Range, self.Drawings.R.Width:Value(), self.Drawings.R.Color:Value()) end
 
 		if self.Drawings.DrawDamage:Value() then
 		for i, hero in pairs(GetEnemyHeroes()) do
