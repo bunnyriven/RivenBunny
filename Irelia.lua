@@ -340,10 +340,10 @@ local data = {casting = false, start = Game.Timer()}
 
 function Irelia:LoadSpells()
 
-	Q = {Range = 625, Delay = 0.25, Width = 0, Speed = 0, Type = 2, Collision = false, Search = 750},
-        W = {Range = 825, Delay = 0.25, Width = 90, Speed = mathhuge, Type = 1, Collision = false, Search = 3500},
-        E = {Range = 900, Delay = 0.75, Width = 90, Speed = 2000, Type = 1, Collision = false, Search = 3500},
-        R = {Range = 1000, Delay = 0.4, Width = 400, Speed = 2000, Type = 1, Collision = false, Search = 3500},
+	Q = {Range = 625, Delay = 0.25, Width = 0, Speed = 0, Collision = false, aoe = false, Type = "line"}
+        W = {Range = 825, Delay = 0.25, Width = 90, Speed = 1000, Collision = false, aoe = false, Type = "line"}
+        E = {Range = 900, Delay = 0.75, Width = 90, Speed = 2000, Collision = false, aoe = false, Type = "line"}
+        R = {Range = 1000, Delay = 0.4, Width = 400, Speed = 2000, Collision = false, aoe = false, Type = "line"}
 
 end
 
