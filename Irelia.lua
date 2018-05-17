@@ -1,4 +1,4 @@
-local Heroes = {"XinZhao","Olaf","Irelia","Xerath","Ryze","Kled","Cassiopeia","Malzahar","Lucian","Morgana","Twitch","Jhin","Ashe","Alistar","Ahri","Azir","Blitzcrank","Draven","Ezreal","Fizz","Jinx","Kalista","KogMaw","Leblanc","LeeSin","Lux","Nasus","Nidalee","Orianna","Syndra","Teemo","Thresh","Tristana","Caitlyn","Veigar","Yasuo","Zed", "Annie","Akali"}
+local Heroes = {"Riven","Olaf","Irelia","Xerath","Ryze","Kled","Cassiopeia","Malzahar","Lucian","Morgana","Twitch","Jhin","Ashe","Alistar","Ahri","Azir","Blitzcrank","Draven","Ezreal","Fizz","Jinx","Kalista","KogMaw","Leblanc","LeeSin","Lux","Nasus","Nidalee","Orianna","Syndra","Teemo","Thresh","Tristana","Caitlyn","Veigar","Yasuo","Zed", "Annie","Akali"}
 if not table.contains(Heroes, myHero.charName) then return end
 
 require "DamageLib"
@@ -333,69 +333,64 @@ end
 
 -- CHAMPS:
 
-class "Irelia"
+class "Riven"
 
-local timer = Game.Timer()
-local data = {casting = false, start = Game.Timer()}
+local Q3Icon = "https://vignette.wikia.nocookie.net/leagueoflegends/images/4/4b/Steel_Tempest_3.png"
 
-function Irelia:LoadSpells()
+function Riven:LoadSpells()
 
-	Q = {Range = 625, Delay = 0.25, Width = 0, Speed = 0, Collision = false, aoe = false, Type = "line"}
-        W = {Range = 825, Delay = 0.25, Width = 90, Speed = 1000, Collision = false, aoe = false, Type = "line"}
-        E = {Range = 900, Delay = 0.75, Width = 90, Speed = 2000, Collision = false, aoe = false, Type = "line"}
-        R = {Range = 1000, Delay = 0.4, Width = 400, Speed = 2000, Collision = false, aoe = false, Type = "line"}
+	Q = {Range = 780, Width = 0, Delay = 0,30, Speed = 0, Collision = false, aoe = false, Type = "line"}
+	W = {Range = 270, Width = 0, Delay = 0.25, Speed = 1500, Collision = false, aoe = false, Type = "circular"}
+	E = {Range = 325, Width = 0, Delay = 0.25, Speed = 1450, Collision = false, aoe = false, Type = "line"}
+	R = {Range = 1150, Width = 0, Delay = 0.20, Speed = 1200, Collision = false, aoe = false, Type = "line"}
 
 end
 
-function Irelia:LoadMenu()
-	AIO = MenuElement({type = MENU, id = "Irelia", name = "Kypo's AIO: Irelia", leftIcon = AIOIcon})
+function Riven:LoadMenu()
+	AIO = MenuElement({type = MENU, id = "Riven", name = "Kypos AIO: Riven", leftIcon = AIOIcon})
 	AIO:MenuElement({id = "Combo", name = "Combo", type = MENU})
 	AIO.Combo:MenuElement({id = "UseQ", name = "Q", value = true})
 	AIO.Combo:MenuElement({id = "UseW", name = "W", value = true})
-	AIO.Combo:MenuElement({id = "UseE", name = "E", value = true})
-	AIO.Combo:MenuElement({id = "EStun", name = "Only E to Stun?", value = true})
-	AIO.Combo:MenuElement({id = "RKey", name = "R Key", key = string.byte("T")})
-	AIO.Combo:MenuElement({id = "comboActive", name = "Combo key", key = string.byte(" ")})	
+	AIO.Combo:MenuElement({id = "UseE", name = "E", value = false})
+	AIO.Combo:MenuElement({id = "UseR", name = "R", value = false})
+	AIO.Combo:MenuElement({id = "UseRHealth", name = "Use R if enemy health is below %",value=60,min=0,max=100})
+	AIO.Combo:MenuElement({id = "ApproachTypes", name = "Approach Logic", value = 1,drop = {"W>Q>AA..", "E>W>Q>AA..","E>1Q>W>Q>.."}})
+	AIO.Combo:MenuElement({id = "comboActive", name = "Combo key", key = string.byte(" ")})
 	
-	AIO:MenuElement({id = "Harass", name = "Harass", type = MENU})
-	AIO.Harass:MenuElement({id = "UseQ", name = "Q", value = true})
-	AIO.Harass:MenuElement({id = "UseW", name = "W", value = true})
-	AIO.Harass:MenuElement({id = "UseE", name = "E", value = true})
-	AIO.Harass:MenuElement({id = "harassActive", name = "Harass key", key = string.byte("V")})
-
-	AIO:MenuElement({id = "Lasthit", name = "Lasthit", type = MENU})
-	AIO.Lasthit:MenuElement({id = "UseQ", name = "Q", value = true})
-	AIO.Lasthit:MenuElement({id = "lasthitActive", name = "Lasthit key", key = string.byte("X")})
-	
-	-- AIO:MenuElement({id = "Gapclose", name = "Gapclose", type = MENU})
-	-- AIO.Gapclose:MenuElement({id = "QCombo", name = "Q on Combo", value = true})
-	-- AIO.Gapclose:MenuElement({id = "QKS", name = "Q > Minion > KS Target", value = true})
+	AIO:MenuElement({id = "Burst", name = "Burst Combos", type = MENU})
+	AIO.Burst:MenuElement({id = "BurstTypeKey1", name = "Burst Logic", value = 1,drop = {"The Shy Combo", "X","X","X"}})
+	AIO.Burst:MenuElement({id = "burstkey1", name = "Burst key 1", key = string.byte("T")})
+	AIO.Burst:MenuElement({id = "blank", type = SPACE , name = ""})
+	AIO.Burst:MenuElement({id = "BurstTypeKey2", name = "Burst Logic", value = 1,drop = {"R>E>Q3>W>AA", "X","X","X"}})
+	AIO.Burst:MenuElement({id = "burstkey2", name = "Burst key 2", key = string.byte("S")})
+	AIO.Burst:MenuElement({id = "blank", type = SPACE , name = ""})
+	AIO.Burst:MenuElement({id = "BurstTypeKey3", name = "Burst Logic", value = 1,drop = {"R>E>Q3>W>AA", "X","X","X"}})
+	AIO.Burst:MenuElement({id = "burstkey3", name = "Burst key 3", key = string.byte("Y")})
 	
 	AIO:MenuElement({id = "Killsteal", name = "Killsteal", type = MENU})
-	AIO.Killsteal:MenuElement({id = "KS", name = "Enemies to use:", type = MENU})
+	AIO.Killsteal:MenuElement({id = "RR", name = "Enemies to KS:", type = MENU})
 	for i, hero in pairs(GetEnemyHeroes()) do
-	AIO.Killsteal.KS:MenuElement({id = "KS"..hero.charName, name = ""..hero.charName, value = true})
+	AIO.Killsteal.RR:MenuElement({id = "KS"..hero.charName, name = ""..hero.charName, value = true})
 	end
-	AIO.Killsteal:MenuElement({id = "UseQ", name = "Q", value = true})
-	AIO.Killsteal:MenuElement({id = "UseE", name = "E", value = true})
-	AIO.Killsteal:MenuElement({id = "UseR", name = "Use R? Calculates all 4!", value = true})
+	AIO.Killsteal:MenuElement({id = "UseR", name = "R2", value = true})
+	AIO.Killsteal:MenuElement({id = "UseW", name = "W", value = true})
 	
 	AIO:MenuElement({id = "Drawings", name = "Drawings", type = MENU})
 	--Q
 	AIO.Drawings:MenuElement({id = "Q", name = "Draw Q range", type = MENU})
     AIO.Drawings.Q:MenuElement({id = "Enabled", name = "Enabled", value = true})       
     AIO.Drawings.Q:MenuElement({id = "Width", name = "Width", value = 1, min = 1, max = 5, step = 1})
-    AIO.Drawings.Q:MenuElement({id = "Color", name = "Color", color = Draw.Color(200, 255, 255, 255)})	
+    AIO.Drawings.Q:MenuElement({id = "Color", name = "Color", color = Draw.Color(200, 255, 255, 255)})
 	--W
-	-- AIO.Drawings:MenuElement({id = "W", name = "Draw W range", type = MENU})
-    -- AIO.Drawings.W:MenuElement({id = "Enabled", name = "Enabled", value = true})       
-    -- AIO.Drawings.W:MenuElement({id = "Width", name = "Width", value = 1, min = 1, max = 5, step = 1})
-    -- AIO.Drawings.W:MenuElement({id = "Color", name = "Color", color = Draw.Color(200, 255, 255, 255)})	
+	AIO.Drawings:MenuElement({id = "W", name = "Draw W range", type = MENU})
+    AIO.Drawings.W:MenuElement({id = "Enabled", name = "Enabled", value = true})       
+    AIO.Drawings.W:MenuElement({id = "Width", name = "Width", value = 1, min = 1, max = 5, step = 1})
+    AIO.Drawings.W:MenuElement({id = "Color", name = "Color", color = Draw.Color(200, 255, 255, 255)})	
 	--E
 	AIO.Drawings:MenuElement({id = "E", name = "Draw E range", type = MENU})
-    AIO.Drawings.E:MenuElement({id = "Enabled", name = "Enabled", value = false})       
+    AIO.Drawings.E:MenuElement({id = "Enabled", name = "Enabled", value = true})       
     AIO.Drawings.E:MenuElement({id = "Width", name = "Width", value = 1, min = 1, max = 5, step = 1})
-    AIO.Drawings.E:MenuElement({id = "Color", name = "Color", color = Draw.Color(200, 255, 255, 255)})	
+    AIO.Drawings.E:MenuElement({id = "Color", name = "Color", color = Draw.Color(200, 255, 255, 255)})
 	--R
 	AIO.Drawings:MenuElement({id = "R", name = "Draw R range", type = MENU})
     AIO.Drawings.R:MenuElement({id = "Enabled", name = "Enabled", value = true})       
@@ -406,7 +401,7 @@ function Irelia:LoadMenu()
     AIO.Drawings:MenuElement({id = "HPColor", name = "HP Color", color = Draw.Color(200, 255, 255, 255)})
 
 	AIO:MenuElement({id = "CustomSpellCast", name = "Use custom spellcast", tooltip = "Can fix some casting problems with wrong directions and so", value = true})
-	AIO:MenuElement({id = "delay", name = "Custom spellcast delay", value = 50, min = 0, max = 200, step = 5,tooltip = "increase this one if spells is going completely wrong direction", identifier = ""})
+	AIO:MenuElement({id = "delay", name = "Custom spellcast delay", value = 100, min = 0, max = 200, step = 5,tooltip = "increase this one if spells is going completely wrong direction", identifier = ""})
 	
 	AIO:MenuElement({id = "blank", type = SPACE , name = ""})
 	AIO:MenuElement({id = "blank", type = SPACE , name = "Script Ver: "..Version.. " - LoL Ver: "..LVersion.. ""})
@@ -414,7 +409,8 @@ function Irelia:LoadMenu()
 end
 
 
-function Irelia:__init()
+function Riven:__init()
+	local flashslot
 	self:LoadSpells()
 	self:LoadMenu()
 	Callback.Add("Tick", function() self:Tick() end)
@@ -431,48 +427,51 @@ function Irelia:__init()
 	end
 end
 
-
-function Irelia:Tick()
-    if myHero.dead or Game.IsChatOpen() == true or IsRecalling() == true or ExtLibEvade and ExtLibEvade.Evading == true then return end
+function Riven:Tick()
+        if myHero.dead or Game.IsChatOpen() == true or IsRecalling() == true or ExtLibEvade and ExtLibEvade.Evading == true then return end
 	if AIO.Combo.comboActive:Value() then
-		self:ComboQ()
-		self:ComboW()
-		self:ComboE()
+		self:ApproachTypes()
+	end	
+	if AIO.Burst.burstkey1:Value() then
+		self:BurstCombos()
 	end
-	if AIO.Lasthit.lasthitActive:Value() then
-		self:Lasthit()
-	end
-	if AIO.Harass.harassActive:Value() then
-		self:HarassE()
-		self:HarassW()
-	end
-	
-	self:KillstealQ()
-	self:KillstealE()
-	self:KillstealR()
-	
-	self:RKey()
+		self:RksKnockedback()
+		self:KillstealW()
+		self:RKSNormal()
+		self:test()
+		
+		flashslot = self:getFlash()
+
 end
 
-function Irelia:Draw()
+function Riven:getFlash()
+	for i = 1, 5 do
+		if myHero:GetSpellData(SUMMONER_1).name == "SummonerFlash" then
+			return SUMMONER_1
+		end
+		if myHero:GetSpellData(SUMMONER_2).name == "SummonerFlash" then
+			return SUMMONER_2
+		end
+	end
+	return 0
+end
+
+function Riven:Draw()
 if Ready(_Q) and AIO.Drawings.Q.Enabled:Value() then Draw.Circle(myHero.pos, Q.Range, AIO.Drawings.Q.Width:Value(), AIO.Drawings.Q.Color:Value()) end
+if Ready(_W) and AIO.Drawings.W.Enabled:Value() then Draw.Circle(myHero.pos, W.Range, AIO.Drawings.E.Width:Value(), AIO.Drawings.W.Color:Value()) end
 if Ready(_E) and AIO.Drawings.E.Enabled:Value() then Draw.Circle(myHero.pos, E.Range, AIO.Drawings.E.Width:Value(), AIO.Drawings.E.Color:Value()) end
 if Ready(_R) and AIO.Drawings.R.Enabled:Value() then Draw.Circle(myHero.pos, R.Range, AIO.Drawings.R.Width:Value(), AIO.Drawings.R.Color:Value()) end
-
-		if AIO.Drawings.DrawDamage:Value() then
+			if AIO.Drawings.DrawDamage:Value() then
 		for i, hero in pairs(GetEnemyHeroes()) do
 			local barPos = hero.hpBar
 			if not hero.dead and hero.pos2D.onScreen and barPos.onScreen and hero.visible then
-				local QDamage = (Ready(_Q) and Irelia:QDMG() or 0)
-				local WDamage = (Ready(_W) and Irelia:WDMG() or 0)
-				local EDamage = (Ready(_E) and Irelia:EDMG() or 0)
-				local RDamage = (Ready(_R) and Irelia:RDMG() or 0)
-				local AA = (getdmg("AA",hero,myHero) or 0) * 5
-								
-				local damage = QDamage + WDamage + EDamage + RDamage + AA
+				local QDamage = (Ready(_Q) and getdmg("Q",hero,myHero) or 0) - hero.armor
+				local WDamage = (Ready(_W) and getdmg("W",hero,myHero) or 0) - hero.armor
+				local RDamage = (Ready(_R) and getdmg("R",hero,myHero) or 0) - hero.armor
+				local AA = Riven:AADMG() - hero.armor
+				local damage = QDamage + WDamage + RDamage + AA
 				if damage > hero.health then
-					Draw.Text("KILLABLE", 30, hero.pos2D.x - 55, hero.pos2D.y - 190,Draw.Color(200, 255, 87, 51))	
-					
+					Draw.Text("KILLABLE", 28, hero.pos2D.x - 40, hero.pos2D.y - 215,Draw.Color(200, 41, 219, 32))	
 				else
 					local percentHealthAfterDamage = math.max(0, hero.health - damage) / hero.maxHealth
 					local xPosEnd = barPos.x + barXOffset + barWidth * hero.health/hero.maxHealth
@@ -482,182 +481,411 @@ if Ready(_R) and AIO.Drawings.R.Enabled:Value() then Draw.Circle(myHero.pos, R.R
 			end
 		end	
 	end
-		if Ready(_Q) then
-			local target = CurrentTarget(Q.Range)
+		if Ready(_R) then
+			local target = CurrentTarget(R.Range)
 			if target == nil then return end
+			local temppred
 			if (TPred) then
-				local castpos,HitChance, pos = TPred:GetBestCastPosition(target, Q.Delay , Q.Width, Q.Range, Q.Speed, myHero.pos, not Q.ignorecol, Q.Type )
+				local castpos,HitChance, pos = TPred:GetBestCastPosition(target, R.Delay , R.Width, R.Range,R.Speed, myHero.pos, R.ignorecol, R.Type )
 				Draw.Circle(castpos, 60, 3, Draw.Color(200, 255, 255, 255))
 			end
 		end
 end
 
-function Irelia:QDMG()
-    local level = myHero:GetSpellData(_Q).level
-    local damage = ({20, 50, 80, 110, 140})[level] + 1.2 * myHero.totalDamage
-	return damage
-end
-
-function Irelia:WDMG()
-    local level = myHero:GetSpellData(_W).level
-    local damage = ({15, 30, 45, 60, 75})[level]
-	return damage
-end
-
-function Irelia:EDMG()
-    local level = myHero:GetSpellData(_E).level
-    local damage = ({80, 120, 160, 200, 240})[level] + 0.5 * myHero.ap
-	return damage
-end
-
-function Irelia:RDMG()
-    local level = myHero:GetSpellData(_R).level
-    local damage = ({320, 480, 640})[level] + 0.5 * myHero.ap + 0.7 * myHero.totalDamage
-	return damage
-end
-
-function Irelia:IsImmobileTarget(unit)
+function Riven:IsImmobileTarget(unit)
 		if unit == nil then return false end
 		for i = 0, unit.buffCount do
 			local buff = unit:GetBuff(i)
-			if buff and (buff.type == 5 or buff.type == 11 or buff.type == 29 or buff.type == 24 or buff.type == 28 or buff.type == 21 or buff.type == 22) and buff.count > 0 and Game.Timer() < buff.expireTime - 0.5 then
+			if buff and (buff.type == 5 or buff.type == 11 or buff.type == 29 or buff.type == 24) and buff.count > 0 then
 				return true
 			end
 		end
 		return false	
-end
-
-function Irelia:ComboQ()
-	local target = CurrentTarget(Q.Range)
-	if target == nil then return end
-	if AIO.Combo.UseQ:Value() and target and Ready(_Q) then
-		if EnemyInRange(Q.Range) and GetDistance(myHero.pos, target.pos) > 130 then 
-		    Control.CastSpell(HK_Q,target)
-			end
-		end
-end
-
-function Irelia:ComboW()
-	local target = CurrentTarget(W.Range)
-	if target == nil then return end
-	if AIO.Combo.UseW:Value() and target and Ready(_W) then
-		if EnemyInRange(W.Range) then
-			if GetDistance(myHero.pos, target.pos) < 130 then
-			    Control.CastSpell(HK_W)
-			end
-		end
 	end
-end
 
-function Irelia:ComboE()
-	local target = CurrentTarget(E.Range)
-	if target == nil then return end
-	if AIO.Combo.UseE:Value() and target and Ready(_E) then
-		if EnemyInRange(E.Range) and AIO.Combo.EStun:Value() == false then
-			    Control.CastSpell(HK_E,target)
-		elseif EnemyInRange(E.Range) and AIO.Combo.EStun:Value() == true then
-			if target.health >= myHero.health then
-				Control.CastSpell(HK_E,target)
+function Riven:IsKnockedUp(unit)
+		if unit == nil then return false end
+		for i = 0, unit.buffCount do
+			local buff = unit:GetBuff(i)
+			if buff and (buff.type == 29 or buff.type == 30 or buff.type == 39) and buff.count > 0 then
+				return true
 			end
 		end
-	end
-end
-
-function Irelia:RKey()
-	local target = CurrentTarget(R.Range)
-	if target == nil then return end
-	if AIO.Combo.RKey:Value() and target and Ready(_R) then
-		if EnemyInRange(R.Range) then
-			local castpos,HitChance, pos = TPred:GetBestCastPosition(target, R.Delay , R.Width, R.Range, R.Speed, myHero.pos, R.ignorecol, R.Type )
-			if (HitChance > 0 ) then
-			    Control.CastSpell(HK_R,castpos)
-			end
-		end
-	end
-end
-
-function Irelia:HarassQ()
-	local target = CurrentTarget(Q.Range)
-	if target == nil then return end
-	if AIO.Harass.UseQ:Value() and target and Ready(_Q) then
-		if EnemyInRange(Q.Range) and GetDistance(myHero.pos, target.pos) > 130 then 
-		    Control.CastSpell(HK_Q,target)
-			end
-		end
-end
-
-function Irelia:HarassE()
-	local target = CurrentTarget(E.Range)
-	if target == nil then return end
-	if AIO.Harass.UseE:Value() and target and Ready(_E) then
-		if EnemyInRange(E.Range) then 
-		    Control.CastSpell(HK_E,target)
-		end
-	end
-end
-	
-function Irelia:HarassW()
-	local target = CurrentTarget(W.Range)
-	if target == nil then return end
-	if AIO.Harass.UseW:Value() and target and Ready(_W) then
-		if EnemyInRange(W.Range) then
-			if GetDistance(myHero.pos, target.pos) < 130 then
-			    Control.CastSpell(HK_W)
-			end
-		end
-	end
-end
-
-function Irelia:Lasthit()
-	if Ready(_Q) then
-  		for i = 1, Game.MinionCount() do
-			local minion = Game.Minion(i)
-			local Qdamage = self:QDMG()
-			if myHero.pos:DistanceTo(minion.pos) < Q.Range and AIO.Lasthit.UseQ:Value() and minion.isEnemy and not minion.dead then
-				if Qdamage >= HpPred(minion,1) then
-				Control.CastSpell(HK_Q,minion)
-				end
-			end
-		end
-	end
-end
-
-function Irelia:KillstealQ()
-	local target = CurrentTarget(Q.Range)
-	if target == nil then return end
-	if AIO.Killsteal.UseQ:Value() and AIO.Killsteal.KS["KS"..target.charName]:Value() and target and Ready(_Q) then
-		if EnemyInRange(Q.Range) then 
-		   	local Qdamage = Irelia:QDMG()
-			if Qdamage >= HpPred(target,1) + target.hpRegen * 1 then
-				CastSpell(HK_Q, target)
-				end
-			end
-		end
+		return false	
 	end
 	
-function Irelia:KillstealE()
-	local target = CurrentTarget(E.Range)
+function Riven:CountKnockedUpEnemies(range)
+		local count = 0
+		local rangeSqr = range * range
+		for i = 1, Game.HeroCount()do
+		local hero = Game.Hero(i)
+			if hero.isEnemy and hero.alive and GetDistanceSqrYas(myHero.pos, hero.pos) <= rangeSqr then
+			if Riven:IsKnockedUp(hero)then
+			count = count + 1
+    end
+  end
+end
+return count
+end
+
+
+-- function CastQ(target)
+    -- local target = CurrentTarget(335)
+    -- if target == nil then return end
+	    -- if myHero.attackData.state == STATE_WINDDOWN and myHero.attackData.windDownTime >= 0.0000000000001 then
+			    -- DisableOrb()
+				-- Control.CastSpell(HK_Q,target)
+				-- DelayAction(function() EnableOrb() end, 0.1)
+		-- elseif myHero.attackData.windUpTime >= 0.0000000000010 then
+				-- Control.Attack(target)
+		-- end
+	-- end
+
+
+-- function CastQMinion(minion)
+	-- for i = 1, Game.MinionCount() do
+	-- local minion = Game.Minion(i)
+	-- if minion and minion.team == 300 or minion.team ~= myHero.team then
+	    		-- local WINDDOWN = myHero.attackData.state == STATE_WINDDOWN
+		-- local WINDUP = myHero.attackData.state == STATE_WINDUP
+		-- local WINUPTIME = myHero.attackData.windUpTime
+		-- local WINDOWNTIME = myHero.attackData.windDownTime
+		-- local ANIMATIONTIME = myHero.attackData.animationTime
+		
+		-- local x = myHero.attackData.animationTime
+		
+	    -- if WINDDOWN and WINDOWNTIME >= 0.0000000000001 then
+				-- DisableOrb()
+				-- Control.CastSpell(HK_Q,minion)
+		-- elseif ANIMATIONTIME >= WINUPTIME + 0.0000000000001 then
+				-- Control.Move(minion.pos)
+				-- print("moved")
+		-- elseif ANIMATIONTIME >= WINDOWNTIME + 0.0000000000001 then
+				-- Control.Attack(minion)
+				-- DelayAction(function() EnableOrb() end, 0.45)
+		-- end
+	-- end
+	-- end
+	-- end
+	
+	-- function CastQMinion(minion)
+	-- for i = 1, Game.MinionCount() do
+	-- local minion = Game.Minion(i)
+	-- if minion and minion.team == 300 or minion.team ~= myHero.team then
+	    -- if myHero.attackData.state == STATE_WINDDOWN and myHero.attackData.windDownTime >= 0.0000000000001 then
+			    -- DisableOrb()
+				-- Control.CastSpell(HK_Q,minion)
+				-- DelayAction(function() EnableOrb() end, 0.1)
+		-- elseif myHero.attackData.windUpTime >= 0.0000000000010 then
+		-- local Vec = Vector(myHero.pos):Normalized() * - (myHero.boundingRadius*1.1)
+			    -- Control.Move(Vec)
+				-- print("moved")
+				-- Control.Attack(minion)
+		-- end
+	-- end
+	-- end
+	-- end
+
+function Riven:test()
+-- print("")
+
+-- local q = false
+-- local timer = 0
+		-- if q == false and myHero:GetSpellData(Q).toggleState == 2 then
+  -- timer = Game.Timer()
+  -- q = true
+-- end
+		-- if q == true and myHero:GetSpellData(Q).toggleState == 1 then
+  -- print(Game.Timer() - timer)
+  -- q = false
+-- end
+
+-- print(myHero:GetSpellData(_Q).range)
+-- print(myHero.attackData.endTime)
+-- if myHero.attackData.state == STATE_WINDUP then
+-- if myHero.attackData.windUpTime > 0.21577 then
+-- Control.Move(mousePos)
+-- print("finish aa")
+end
+-- end
+-- end
+-- end
+-- end
+
+	-- AIO:MenuElement({id = "Burst", name = "Burst Combos", type = MENU})
+	-- AIO.Burst:MenuElement({id = "BurstTypeKey1", name = "Burst Logic", value = 1,drop = {"The Shy Combo", "X","X","X"}})
+	-- AIO.Burst:MenuElement({id = "burstkey1", name = "Burst key 1", key = string.byte("T")})
+	-- AIO.Burst:MenuElement({id = "blank", type = SPACE , name = ""})
+	-- AIO.Burst:MenuElement({id = "BurstTypeKey2", name = "Burst Logic", value = 1,drop = {"R>E>Q3>W>AA", "X","X","X"}})
+	-- AIO.Burst:MenuElement({id = "burstkey2", name = "Burst key 2", key = string.byte("S")})
+	-- AIO.Burst:MenuElement({id = "blank", type = SPACE , name = ""})
+	-- AIO.Burst:MenuElement({id = "BurstTypeKey3", name = "Burst Logic", value = 1,drop = {"R>E>Q3>W>AA", "X","X","X"}})
+	-- AIO.Burst:MenuElement({id = "burstkey3", name = "Burst key 3", key = string.byte("Y")})
+	
+function Riven:BurstCombos(target)
+local mode = AIO.Burst.BurstTypeKey1:Value() 
+	if mode == 1 then
+		self:TheShyCombo()
+	elseif mode == 2 then
+		self:Approach2E()	
+		elseif mode == 3 then
+		self:Approach3E()
+
+end
+end
+
+function Riven:TheShyCombo()
+		local WINDDOWN = myHero.attackData.state == STATE_WINDDOWN	-- Finish AA
+		local WINDOWNTIME = myHero.attackData.windDownTime			-- 
+		local Hydra = GetInventorySlotItem(3074)
+
+local target = CurrentTarget(E.Range+400)
+if target == nil then return end
+		if Ready(_E) and Ready(_R) and Ready(_Q) and Ready(_W) and Ready(flashslot) then
+			Control.CastSpell(HK_E, target)
+		-- if not Ready(_E) then
+			Control.CastSpell(HK_R)
+		-- if myHero:GetSpellData(R).name == "RivenIzunaBlade" then
+			-- Control.CastSpell(flashslot == SUMMONER_1 and HK_SUMMONER_1 or HK_SUMMONER_2,target)
+		-- if not Ready(flashslot) and GetDistance(myHero.pos,target.pos) < W.Range then
+			-- Control.CastSpell(HK_W)
+		-- if not Ready(_W) then
+			-- Control.Attack(target)
+			-- print("attacked target")
+		-- if WINDDOWN and WINDOWNTIME > 0.0000000005000 then	
+		-- if Hydra and GetDistance(myHero.pos,target.pos) < 350 then
+			-- Control.CastSpell(HKITEM[Hydra])
+		-- if myHero:GetSpellData(R).name == "RivenIzunaBlade" and WINDDOWN and WINDOWNTIME > 0.0000000005000 then
+			-- Control.CastSpell(HK_R, target)
+		-- if not Ready(_R) then
+			-- self:CastQ()
+end
+end
+-- end
+-- end
+-- end
+-- end
+-- end
+-- end
+-- end
+-- end
+
+			
+	
+	
+function CastQ(target)
+    local target = CurrentTarget(500)
+    if target == nil then return end
+																	-- AA > Q > Move > ..
+		local WINDDOWN = myHero.attackData.state == STATE_WINDDOWN	-- Finish AA
+		local WINDUP = myHero.attackData.state == STATE_WINDUP 		-- About to AA
+		local ATTACK = myHero.attackData.state == STATE_ATTACK		-- ATTACK
+		local WINUPTIME = myHero.attackData.windUpTime				-- 
+		local WINDOWNTIME = myHero.attackData.windDownTime			-- 
+		local ANIMATIONTIME = myHero.attackData.animationTime		-- Animation time
+	    if WINDDOWN and WINDOWNTIME > 0.0000000005000 then	
+				DisableMovement()
+				Control.CastSpell(HK_Q,target)
+		-- elseif WINDDOWN and WINDOWNTIME > 0.0000000009000 then
+				DelayAction(function() 
+				Control.Move(target.pos)
+				EnableMovement()
+				Control.Attack(target)
+				print("moved")
+				end, 0.5)
+				DelayAction(function() EnableMovement() end, 1.5)
+	    -- if WINDDOWN and WINDOWNTIME >= 0.000030 then
+				-- Control.Move(target.pos)
+				-- print("moved")
+		-- elseif ANIMATIONTIME >= WINDOWNTIME + 0.0000000000001 then
+		end
+		end
+
+function Riven:ApproachTypes(target)
+local mode = AIO.Combo.ApproachTypes:Value() 
+	if mode == 1 then
+		self:ApproachW()
+		self:ApproachQ()
+	elseif mode == 2 then
+		self:Approach2E()
+		self:Approach2W()
+		self:ApproachQ()	
+		elseif mode == 3 then
+		self:Approach3E()
+		self:Approach31Q()
+		self:ApproachW()
+		self:ApproachQ()
+end
+end
+
+function Riven:ApproachQ()
+    local target = CurrentTarget(335)
+    if target == nil then return end
+    if AIO.Combo.UseQ:Value() and target and Ready(_Q) then		
+	    if EnemyInRange(335) then
+			CastQ()
+		end    
+	end
+end
+		
+function Riven:ApproachW()
+    local target = CurrentTarget(W.Range)
+    if target == nil then return end
+if AIO.Combo.UseW:Value() and target and Ready(_W) then
+	    if EnemyInRange(W.Range) then
+			    Control.CastSpell(HK_W)
+				end
+			end
+		end
+function Riven:Approach2W()
+    local target = CurrentTarget(270)
+    if target == nil then return end
+if AIO.Combo.UseW:Value() and target and Ready(_W) then
+	    if EnemyInRange(270) then
+			    Control.CastSpell(HK_W)
+				end
+			end
+		end
+		
+function Riven:Approach2E()
+    local target = CurrentTarget(E.Range+W.Range-80)
+    if target == nil then return end
+    if AIO.Combo.UseE:Value() and target and Ready(_E) and Ready(_W) then		
+	    if EnemyInRange(E.Range+W.Range-80) then
+			local pos = target:GetPrediction(E.Speed,0.25)
+			pos = myHero.pos + (pos - myHero.pos):Normalized()*(E.Range)
+			Control.CastSpell(HK_E, pos)
+		end    
+	end
+end
+
+function Riven:Approach3E()
+    local target = CurrentTarget(E.Range+W.Range+275)
+    if target == nil then return end
+    if AIO.Combo.UseE:Value() and target and Ready(_E) and Ready(_W) then		
+	    if EnemyInRange(E.Range+W.Range) then
+			local pos = target:GetPrediction(E.Speed,0.25)
+			pos = myHero.pos + (pos - myHero.pos):Normalized()*(E.Range)
+			Control.CastSpell(HK_E, pos)
+		end    
+	end
+end
+function Riven:Approach31Q()
+    local target = CurrentTarget(W.Range+275)
+    if target == nil then return end
+    if AIO.Combo.UseQ:Value() and target and Ready(_Q) then		
+	    if EnemyInRange(E.Range+W.Range) and GetDistance(myHero.pos, target.pos) > E.Range+W.Range+275 and myHero:GetSpellData(Q).ammo == 0 and not myHero:GetSpellData(Q).ammo == 1 and not myHero:GetSpellData(Q).ammo == 2 then
+			local pos = target:GetPrediction(Q.Speed,0.25)
+			pos = myHero.pos + (pos - myHero.pos):Normalized()*(Q.Range)
+			Control.CastSpell(HK_Q, pos)
+		end    
+	end
+end
+
+	-- for i = 1, Game.MinionCount() do
+	-- local minion = Game.Minion(i)
+	-- if minion and minion.team == 300 or minion.name == "SRU_Razorbeak" or minion.name == "SRU_Red" or minion.name == "SRU_Blue" or minion.name == "SRU_Krug" or minion.name == "SRU_Gromp" or minion.name == "SRU_MurkWolf" or minion.name == "SRU_KrugMini" or minion.name == "SRU_Dragon_Fire" or minion.name == "SRU_Dragon_Air" or minion.name == "SRU_Dragon_Earth" or minion.name == "SRU_Dragon_Water" or minion.name == "SRU_Dragon_Elder" or minion.name == "SRU_Baron" or minion.name == "SRU_Herald" then
+		-- if Ready(_Q) then 
+			-- local castpos,HitChance, pos = TPred:GetBestCastPosition(minion, Q3.Delay , Q3.Width, Q3.Range ,Q3.Speed, myHero.pos, Q3.ignorecol, Q3.Type )
+			-- if AIO.Clear.UseQ:Value() and minion then
+				-- if ValidTarget(minion, 900) and myHero.pos:DistanceTo(minion.pos) < 900 then
+					-- if (HitChance > 0 ) and HasBuff(myHero, "RivenQ3W") then
+					-- Control.CastSpell(HK_Q, castpos)
+					-- end
+				-- end
+			-- end
+		-- end
+	-- end
+	-- end
+	-- end
+
+-- SRU_Razorbeak
+-- SRU_Red
+-- SRU_Krug
+-- SRU_Gromp
+-- SRU_Blue
+-- SRU_MurkWolf
+-- SRU_KrugMini
+-- SRU_MiniKrugB
+-- Sru_Crab
+-- SRU_Dragon_Fire
+-- SRU_Dragon_Air
+-- SRU_Dragon_Earth
+-- SRU_Dragon_Water
+-- SRU_Dragon_Elder
+
+function Riven:AADMG()
+    local aadamage = myHero.totalDamage * 4
+	return aadamage
+end
+
+function Riven:QDMG()
+    local level = myHero:GetSpellData(_Q).level
+    local qdamage = ({15, 35, 55, 75, 95})[level] + myHero.totalDamage / 100 * ({45, 50, 55, 60, 65})[level]
+	return qdamage
+end
+
+function Riven:WDMG()
+    local level = myHero:GetSpellData(_W).level
+    local wdamage = ({55, 85, 115, 145, 175})[level] + 1.0 * myHero.bonusDamage
+	return wdamage
+end
+
+function Riven:RDMG()
+for i = 1, Game.HeroCount() do
+	local target = Game.Hero(i);
+	if target and target.isEnemy then
+    local level = myHero:GetSpellData(_R).level
+    local rdamage = (({100, 150, 200})[level] + 0.6 * myHero.bonusDamage) * math.max(0.04 * math.min(100 - GetPercentHP(target), 75), 1) - target.armor
+	return rdamage
+end
+end
+end
+
+function Riven:KillstealW()
+	local target = CurrentTarget(W.Range)
 	if target == nil then return end
-	if AIO.Killsteal.UseE:Value() and AIO.Killsteal.KS["KS"..target.charName]:Value() and target and Ready(_E) then
-		if EnemyInRange(E.Range) then 
-		   	local Edamage = Irelia:EDMG()
-			if Edamage >= HpPred(target,1) + target.hpRegen * 1 then
-				CastSpell(HK_E, target)
+	if AIO.Killsteal.UseW:Value() and AIO.Killsteal.RR["KS"..target.charName]:Value() and target and Ready(_W) then
+		if EnemyInRange(W.Range) then 
+		   	local Wdamage = Riven:WDMG()
+			if Wdamage >= HpPred(target,1) + target.hpRegen * 1 then
+			    Control.CastSpell(HK_W)
 				end
 			end
 		end
 	end
 
-function Irelia:KillstealR()
-	local target = CurrentTarget(R.Range)
+function Riven:RksKnockedback()
+    local target = CurrentTarget(R.Range)
 	if target == nil then return end
-	if AIO.Killsteal.UseR:Value() and AIO.Killsteal.KS["KS"..target.charName]:Value() and target and Ready(_R) then
-		local castpos,HitChance, pos = TPred:GetBestCastPosition(target, R.Delay , R.Width, R.Range, R.Speed, myHero.pos, R.ignorecol, R.Type )
+	if AIO.Killsteal.UseR:Value() and AIO.Killsteal.RR["KS"..target.charName]:Value() and Ready(_R) then
 		if EnemyInRange(R.Range) then 
-		   	local Rdamage = Irelia:RDMG()
+			local ImmobileEnemy = self:IsKnockedUp(target)
+			local level = myHero:GetSpellData(_R).level	
+			local castpos,HitChance, pos = TPred:GetBestCastPosition(target, R.Delay , R.Width, R.Range,R.Speed, myHero.pos, R.ignorecol, R.Type )
+		 	local Rdamage = Riven:RDMG()
 			if Rdamage >= HpPred(target,1) + target.hpRegen * 1 then
-				if (HitChance > 0 ) then
-				CastSpell(HK_R, castpos)
+			if ImmobileEnemy then
+			if (HitChance > 0 ) and HasBuff(myHero, "rivenknockback") and HasBuff(myHero, "rivenwindslashready") then
+			    CastSpell(HK_R,castpos)
+				end
+			end
+		end
+	end
+end
+end
+
+function Riven:RKSNormal()
+    local target = CurrentTarget(R.Range)
+	if target == nil then return end
+	if AIO.Killsteal.UseR:Value() and AIO.Killsteal.RR["KS"..target.charName]:Value() and Ready(_R) then
+		if EnemyInRange(R.Range) then 
+			local level = myHero:GetSpellData(_R).level	
+			local castpos,HitChance, pos = TPred:GetBestCastPosition(target, R.Delay , R.Width, R.Range,R.Speed, myHero.pos, R.ignorecol, R.Type )
+		 	local Rdamage = Riven:RDMG()
+			if Rdamage >= HpPred(target,1) + target.hpRegen * 1 then
+			if (HitChance > 0 ) and HasBuff(myHero, "rivenwindslashready") then
+			    CastSpell(HK_R,castpos)
 				end
 			end
 		end
